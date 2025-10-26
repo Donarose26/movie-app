@@ -2,25 +2,27 @@ const Movie = require("../models/Movie");
 const { errorHandler } = require('../auth');
 
 module.exports.addMovie = (req, res) => {
-    const newMovie = new Movie({
-        title: req.body.title,
-        director: req.body.director,
-        year: req.body.year,
-        description: req.body.description,
-        genre: req.body.genre,
-        image: req.file ? `/uploads/${req.file.filename}` : req.body.image // handle file or URL
+    let newMovie = new Movie({
+        title : req.body.title,
+        director : req.body.director,
+        year : req.body.year,
+        description : req.body.description,
+        genre : req.body.genre
     });
-
     Movie.findOne({ title: req.body.title })
-        .then(existingMovie => {
-            if (existingMovie) return res.status(409).send({ message: 'Movie already exists' });
-            return newMovie.save().then(result => res.status(201).send({
-                message: 'Movie added successfully',
-                movie: result
-            }));
-        })
-        .catch(err => errorHandler(err, req, res));
-};
+    .then(existingMovie => {
+      if (existingMovie) {
+        return res.status(409).send({ message: 'Movie already exists' });
+      } else {
+        return newMovie.save()
+          .then(result => res.status(201).send({
+            message: 'Movie added successfully',
+            movie: result
+          }));
+      }
+    })
+    .catch(error => errorHandler(error, req, res));
+}; 
 //Get All Movies
 module.exports.getAllMovies = (req, res) => {
     return Movie.find({})
@@ -50,26 +52,30 @@ module.exports.getMovie = (req, res) => {
 };
 
 // Update movie
-module.exports.updateMovie = (req, res) => {
-    const updatedMovie = {
-        title: req.body.title,
-        director: req.body.director,
-        year: req.body.year,
-        description: req.body.description,
-        genre: req.body.genre,
-        image: req.file ? `/uploads/${req.file.filename}` : req.body.image // update image if new file uploaded
-    };
+module.exports.updateMovie = (req, res)=>{
 
-    Movie.findByIdAndUpdate(req.params.id, updatedMovie, { new: true })
-        .then(movie => {
-            if (!movie) return res.status(404).send({ message: 'Movie not found' });
+    let updatedMovie = {
+        title : req.body.title,
+        director : req.body.director,
+        year : req.body.year,
+        description : req.body.description,
+        genre : req.body.genre
+    }
+
+    return Movie.findByIdAndUpdate(req.params.id, updatedMovie)
+    .then(movie => {
+        if (movie) {
             res.status(200).send({
                 message: 'Movie updated successfully',
                 updatedMovie: movie
             });
-        })
-        .catch(err => errorHandler(err, req, res));
+        } else {
+            res.status(404).send({ message: 'Movie not found'});
+        }
+    })
+    .catch(error => errorHandler(error, req, res));
 };
+
 
 
 // Delete movie 
