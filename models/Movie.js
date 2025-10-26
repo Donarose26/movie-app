@@ -21,6 +21,10 @@ const movieSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Movie Genre is Required']
     },
+    image: { // ✅ Add this field
+        type: String, 
+        required: false
+    },
     comments: [
         {
             userId: { 

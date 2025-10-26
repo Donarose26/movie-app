@@ -7,7 +7,10 @@ module.exports.addMovie = (req, res) => {
         director : req.body.director,
         year : req.body.year,
         description : req.body.description,
-        genre : req.body.genre
+        genre : req.body.genre,
+        image: req.file
+      ? `/uploads/${req.file.filename}` // local upload
+      : req.body.image || ""           // URL from frontend
     });
     Movie.findOne({ title: req.body.title })
     .then(existingMovie => {
@@ -61,6 +64,11 @@ module.exports.updateMovie = (req, res)=>{
         description : req.body.description,
         genre : req.body.genre
     }
+    if (req.file) {
+    updatedMovie.image = `/uploads/${req.file.filename}`;
+  } else if (req.body.image) {
+    updatedMovie.image = req.body.image;
+  }
 
     return Movie.findByIdAndUpdate(req.params.id, updatedMovie)
     .then(movie => {
