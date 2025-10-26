@@ -9,20 +9,19 @@ module.exports.addMovie = (req, res) => {
         description : req.body.description,
         genre : req.body.genre
     });
-    Movie.findOne({ name: req.body.title })
-
+    Movie.findOne({ title: req.body.title })
     .then(existingMovie => {
-
-        if (existingMovie) {
-            return res.status(409).send({ message: 'Movie already exists'})
-
-        } else {   
-            return newMovie.save()
-      
-            .then(result => res.status(201).send(result))
-        }
+      if (existingMovie) {
+        return res.status(409).send({ message: 'Movie already exists' });
+      } else {
+        return newMovie.save()
+          .then(result => res.status(201).send({
+            message: 'Movie added successfully',
+            movie: result
+          }));
+      }
     })
-    .catch(error => errorHandler(error, req, res))
+    .catch(error => errorHandler(error, req, res));
 }; 
 //Get All Movies
 module.exports.getAllMovies = (req, res) => {
