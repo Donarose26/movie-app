@@ -2,6 +2,8 @@ const Movie = require("../models/Movie");
 const { errorHandler } = require('../auth');
 
 module.exports.addMovie = (req, res) => {
+    // Extract URLs from uploaded files
+    const imageUrls = req.files ? req.files.map(file => file.path) : [];
     let newMovie = new Movie({
         title : req.body.title,
         director : req.body.director,
@@ -53,7 +55,10 @@ module.exports.getMovie = (req, res) => {
 };
 
 // Update movie
-module.exports.updateMovie = (req, res)=>{
+module.exports.updateMovie = (req, res) => {
+    // Get uploaded image URLs from req.files
+    const imageUrls = req.files ? req.files.map(file => file.path) : [];
+
 
     let updatedMovie = {
         title : req.body.title,
@@ -61,7 +66,11 @@ module.exports.updateMovie = (req, res)=>{
         year : req.body.year,
         description : req.body.description,
         genre : req.body.genre,
-        images: imageUrls
+      
+    }
+     // Only update images if new files were uploaded
+    if (imageUrls.length > 0) {
+        updatedMovie.images = imageUrls;
     }
 
     return Movie.findByIdAndUpdate(req.params.id, updatedMovie)
