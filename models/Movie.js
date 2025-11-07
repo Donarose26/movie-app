@@ -21,7 +21,7 @@ const movieSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Movie Genre is Required']
     },
-    image: {
+    images: {
         type: [String],
     },
     comments: [
