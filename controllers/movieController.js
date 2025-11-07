@@ -7,7 +7,8 @@ module.exports.addMovie = (req, res) => {
         director : req.body.director,
         year : req.body.year,
         description : req.body.description,
-        genre : req.body.genre
+        genre : req.body.genre,
+        images: imageUrls
     });
     Movie.findOne({ title: req.body.title })
     .then(existingMovie => {
@@ -59,7 +60,8 @@ module.exports.updateMovie = (req, res)=>{
         director : req.body.director,
         year : req.body.year,
         description : req.body.description,
-        genre : req.body.genre
+        genre : req.body.genre,
+        images: imageUrls
     }
 
     return Movie.findByIdAndUpdate(req.params.id, updatedMovie)
