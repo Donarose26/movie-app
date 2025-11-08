@@ -4,28 +4,38 @@ const { errorHandler } = require('../auth');
 module.exports.addMovie = (req, res) => {
     // Extract URLs from uploaded files
     const imageUrls = req.files ? req.files.map(file => file.path) : [];
-    let newMovie = new Movie({
-        title : req.body.title,
-        director : req.body.director,
+
+    // Ensure genre is always an array
+    let genres = req.body.genre;
+    if (!genres) genres = [];
+    else if (!Array.isArray(genres)) genres = [genres]; // convert string to array if needed
+
+    const newMovie = new Movie({
+        title: req.body.title,
+        director: req.body.director,
         year: req.body.year,
-        description : req.body.description,
-        genre : req.body.genre,
+        description: req.body.description,
+        genre: genres,
+        age: req.body.age,           // new field
+        category: req.body.category, // new field
         images: imageUrls
     });
+
+    // Check if movie already exists by title
     Movie.findOne({ title: req.body.title })
-    .then(existingMovie => {
-      if (existingMovie) {
-        return res.status(409).send({ message: 'Movie already exists' });
-      } else {
-        return newMovie.save()
-          .then(result => res.status(201).send({
-            message: 'Movie added successfully',
-            movie: result
-          }));
-      }
-    })
-    .catch(error => errorHandler(error, req, res));
-}; 
+        .then(existingMovie => {
+            if (existingMovie) {
+                return res.status(409).send({ message: 'Movie already exists' });
+            } else {
+                return newMovie.save()
+                    .then(result => res.status(201).send({
+                        message: 'Movie added successfully',
+                        movie: result
+                    }));
+            }
+        })
+        .catch(error => errorHandler(error, req, res));
+};
 //Get All Movies
 module.exports.getAllMovies = (req, res) => {
     return Movie.find({})
@@ -59,32 +69,39 @@ module.exports.updateMovie = (req, res) => {
     // Get uploaded image URLs from req.files
     const imageUrls = req.files ? req.files.map(file => file.path) : [];
 
+    // Ensure genre is always an array
+    let genres = req.body.genre;
+    if (!genres) genres = [];
+    else if (!Array.isArray(genres)) genres = [genres]; // convert string to array if needed
 
+    // Build updated movie object
     let updatedMovie = {
-        title : req.body.title,
-        director : req.body.director,
+        title: req.body.title,
+        director: req.body.director,
         year: req.body.year,
-        description : req.body.description,
-        genre : req.body.genre,
-      
-    }
-     // Only update images if new files were uploaded
+        description: req.body.description,
+        genre: genres,
+        age: req.body.age,           // new field
+        category: req.body.category  // new field
+    };
+
+    // Only update images if new files were uploaded
     if (imageUrls.length > 0) {
         updatedMovie.images = imageUrls;
     }
 
-    return Movie.findByIdAndUpdate(req.params.id, updatedMovie)
-    .then(movie => {
-        if (movie) {
-            res.status(200).send({
-                message: 'Movie updated successfully',
-                updatedMovie: movie
-            });
-        } else {
-            res.status(404).send({ message: 'Movie not found'});
-        }
-    })
-    .catch(error => errorHandler(error, req, res));
+    return Movie.findByIdAndUpdate(req.params.id, updatedMovie, { new: true })
+        .then(movie => {
+            if (movie) {
+                res.status(200).send({
+                    message: 'Movie updated successfully',
+                    updatedMovie: movie
+                });
+            } else {
+                res.status(404).send({ message: 'Movie not found' });
+            }
+        })
+        .catch(error => errorHandler(error, req, res));
 };
 
 
