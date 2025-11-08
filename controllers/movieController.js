@@ -7,7 +7,7 @@ module.exports.addMovie = (req, res) => {
     let newMovie = new Movie({
         title : req.body.title,
         director : req.body.director,
-        year: Number(req.body.year),
+        year: req.body.year,
         description : req.body.description,
         genre : req.body.genre,
         images: imageUrls
@@ -63,7 +63,7 @@ module.exports.updateMovie = (req, res) => {
     let updatedMovie = {
         title : req.body.title,
         director : req.body.director,
-        year: Number(req.body.year),
+        year: req.body.year,
         description : req.body.description,
         genre : req.body.genre,
       
