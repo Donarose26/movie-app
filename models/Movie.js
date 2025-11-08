@@ -18,8 +18,16 @@ const movieSchema = new mongoose.Schema({
         required: [true, 'Movie Description is Required']
     },
     genre: {
-        type: String,
+        type: [String], // <-- change from String to array of strings
         required: [true, 'Movie Genre is Required']
+    },
+    age: {
+        type: String,  // e.g., "13+" or "16+"
+        required: [true, 'Movie Age is Required']
+    },
+    category: {
+        type: String,  // e.g., "Featured", "Trending"
+        required: [true, 'Movie Category is Required']
     },
     images: {
         type: [String],
